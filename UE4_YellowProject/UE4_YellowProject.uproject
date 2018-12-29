@@ -7,10 +7,7 @@
 		{
 			"Name": "UE4_YellowProject",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
+			"LoadingPhase": "Default"
 		}
 	]
 }
