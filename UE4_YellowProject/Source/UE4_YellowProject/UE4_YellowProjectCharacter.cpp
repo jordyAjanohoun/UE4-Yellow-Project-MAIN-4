@@ -29,8 +29,8 @@ AUE4_YellowProjectCharacter::AUE4_YellowProjectCharacter()
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-	GetCharacterMovement()->JumpZVelocity = 600.f;
-	GetCharacterMovement()->AirControl = 0.2f;
+	GetCharacterMovement()->JumpZVelocity = 300.f;
+	GetCharacterMovement()->AirControl = 0.0f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -74,6 +74,9 @@ void AUE4_YellowProjectCharacter::SetupPlayerInputComponent(class UInputComponen
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AUE4_YellowProjectCharacter::OnResetVR);
+
+	// Pause game functionality - Added by me
+	PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &AUE4_YellowProjectCharacter::PauseGame);
 }
 
 
@@ -130,5 +133,78 @@ void AUE4_YellowProjectCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+// My added items
+
+void AUE4_YellowProjectCharacter::PauseGame()
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC) {
+		// Check if we dont have a valid hud, edgecase
+		if (!HudReference) {
+			HudReference = Cast<AMyHUD>(PC->GetHUD());
+		}
+
+		// Checks if we now have a valid hud ref
+		if (HudReference) {
+			HudReference->ShowSpecificMenu(HudReference->GetPauseMenuClass(), false, true);
+		}
+
+		// Pause the game
+		PC->SetPause(true);
+	}
+}
+
+void AUE4_YellowProjectCharacter::UnPauseGame()
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC) {
+		// Unpause the game
+		PC->SetPause(false);
+
+		// Check if we dont have a valid hud, edgecase
+		if (!HudReference) {
+			HudReference = Cast<AMyHUD>(PC->GetHUD());
+		}
+
+		// Checks if we now have a valid hud ref
+		if (HudReference) {
+			HudReference->ShowSpecificMenu(HudReference->GetGameplayHUDClass(), true, false);
+		}
+	}
+}
+
+void AUE4_YellowProjectCharacter::PossessedBy(AController* NewController) {
+	Super::PossessedBy(NewController);
+
+	// Get and set our HUD reference
+	APlayerController* PC = Cast<APlayerController>(NewController);
+	if (PC) {
+		// Try and get a reference to the hud
+		HudReference = Cast<AMyHUD>(PC->GetHUD());
+		if (HudReference) {
+			// If we successfully got the hud then show the gameplay hud
+			HudReference->ShowSpecificMenu(HudReference->GetGameplayHUDClass(), true, false);
+		}
+	}
+}
+
+void AUE4_YellowProjectCharacter::EndGameParty(const FString & MessageToDisplay) {
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC) {
+		// Check if we dont have a valid hud, edgecase
+		if (!HudReference) {
+			HudReference = Cast<AMyHUD>(PC->GetHUD());
+		}
+
+		// Checks if we now have a valid hud ref
+		if (HudReference) {
+			HudReference->ShowSpecificMenu(HudReference->GetEndGamePartyMenuClass(), false, true,MessageToDisplay);
+		}
+
+		// Pause the game
+		PC->SetPause(true);
 	}
 }

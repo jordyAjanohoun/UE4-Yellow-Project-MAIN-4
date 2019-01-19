@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "MyHUD.h"
 #include "UE4_YellowProjectCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -61,6 +62,7 @@ protected:
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
 	// End of APawn interface
 
 public:
@@ -68,5 +70,23 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	// My added items
+
+public:
+	/** Called when a pause is requested by the player via the inputs defined*/
+	UFUNCTION(BlueprintCallable, Category = "Character|Input")
+	void PauseGame();
+
+	/** Called when resume button is clicked */
+	UFUNCTION(BlueprintCallable, Category = "Character|Input")
+		void UnPauseGame();
+
+	/** Called when the player lose either by overlapping a trap or by time ellapsed */
+	UFUNCTION(BlueprintCallable, Category = "Character|Input")
+		void EndGameParty(const FString & MessageToDisplay);
+private:
+	UPROPERTY()
+		class AMyHUD * HudReference{nullptr};
 };
 
