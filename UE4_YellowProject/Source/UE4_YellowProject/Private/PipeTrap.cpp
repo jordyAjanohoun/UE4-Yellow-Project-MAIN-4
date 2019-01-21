@@ -6,7 +6,7 @@
 APipeTrap::APipeTrap()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Set the Skin/shape of this character interactable element (this actor)
 
@@ -40,12 +40,3 @@ void APipeTrap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-/*void APipeTrap::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-	// if it is not this actor who is triggering its trigger capsule
-	if (OtherActor && (OtherActor != this) && OtherComp) {
-		if (GEngine) {
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, TEXT("PipeTrap is overlaped"));
-		}
-	}
-}*/
